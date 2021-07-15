@@ -141,13 +141,19 @@ def _query_contacts(headers: dict = {}) -> List[str]:
     return ids
 
 
-def _query_orders(headers: dict = {})-> List[tuple]:
+def _query_orders(headers: dict = {}, types: tuple = tuple([0]), query_other: bool = False) -> List[tuple]:
     """
     返回(orderId, tripId) triple list for inside_pay_service
     :param headers:
     :return:
     """
-    url = f"{base_address}/api/v1/orderservice/order/refresh"
+    url = ""
+
+    if query_other:
+        url = f"{base_address}/api/v1/orderOtherService/orderOther/refresh"
+    else:
+        url = f"{base_address}/api/v1/orderservice/order/refresh"
+
     payload = {
         "loginId": uuid,
     }
@@ -163,11 +169,11 @@ def _query_orders(headers: dict = {})-> List[tuple]:
         # status = 0: not paid
         # status=1 paid not collect
         # status=2 collected
-        if d.get("status") == 0:
+        if d.get("status") in types:
             order_id = d.get("id")
             trip_id = d.get("trainNumber")
             pairs.append((order_id, trip_id))
-    print(f"queried {len(pairs)} unpaid orders")
+    print(f"queried {len(pairs)} orders")
 
     return pairs
 
@@ -187,6 +193,44 @@ def _pay_one_order(order_id, trip_id, headers: dict = {}):
     else:
         print(f"pay {order_id} failed!")
         return None
+
+    return order_id
+
+
+def _cancel_one_order(order_id, uuid, headers: dict = {}):
+    url = f"{base_address}/api/v1/cancelservice/cancel/{order_id}/{uuid}"
+
+    response = requests.get(url=url,
+                            headers=headers)
+
+    if response.status_code == 200:
+        print(f"{order_id} cancel success")
+    else:
+        print(f"{order_id} cancel failed")
+
+    return order_id
+
+
+def _collect_one_order(order_id, headers: dict = {}):
+    url = f"{base_address}/api/v1/executeservice/execute/collected/{order_id}"
+    response = requests.get(url=url,
+                            headers=headers)
+    if response.status_code == 200:
+        print(f"{order_id} collect success")
+    else:
+        print(f"{order_id} collect failed")
+
+    return order_id
+
+
+def _enter_station(order_id, headers: dict = {}):
+    url = f"{base_address}/api/v1/executeservice/execute/execute/{order_id}"
+    response = requests.get(url=url,
+                            headers=headers)
+    if response.status_code == 200:
+        print(f"{order_id} enter station success")
+    else:
+        print(f"{order_id} enter station failed")
 
     return order_id
 

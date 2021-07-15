@@ -4,17 +4,19 @@ import requests
 from atomic_queries import _query_orders, _pay_one_order
 from utils import random_form_list
 
-logger = logging.getLogger("query_order_and_pay")
-
 
 def query_order_and_pay(headers):
     """
     查询Order并付款未付款Order
     :return:
     """
-    pairs = _query_orders(headers=headers)
-    if not pairs:
+    pairs = _query_orders(headers=headers, types=tuple([0, 1]))
+    pairs2 = _query_orders(headers=headers, types=tuple([0, 1]), query_other=True)
+
+    if not pairs and not pairs2:
         return
+
+    pairs = pairs + pairs2
 
     # (orderId, tripId) pair
     pair = random_form_list(pairs)
