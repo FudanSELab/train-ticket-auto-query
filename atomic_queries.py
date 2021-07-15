@@ -7,8 +7,8 @@ logger = logging.getLogger("atomic_queries")
 base_address = "http://139.196.152.44:31000"
 
 headers = {
-    "Cookie": "JSESSIONID=B39196FE741E35DAE67BC0719C351390; YsbCaptcha=A274C4DA81AF498A943A2A8661111737",
-    "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyNjMzMDMxMywiZXhwIjoxNjI2MzMzOTEzfQ.SdZ6zov5vfoM70VD9yeTbVy8TSv-tKaeImInP4YOckU",
+    "Cookie": "JSESSIONID=CAF07ABCB2031807D1C6043730C69F17; YsbCaptcha=ABF26F4AE563405894B1540057F62E7B",
+    "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyNjM0NDgyNSwiZXhwIjoxNjI2MzQ4NDI1fQ.4eOMmQDhnq-Hjj1DuiH8duT6rXkP0QfeTnaXwvYGKD4",
     "Content-Type": "application/json"
 }
 
@@ -141,9 +141,62 @@ def _query_contacts(headers: dict = {}) -> List[str]:
     return ids
 
 
+def _query_orders(headers: dict = {})-> List[tuple]:
+    """
+    返回(orderId, tripId) triple list for inside_pay_service
+    :param headers:
+    :return:
+    """
+    url = f"{base_address}/api/v1/orderservice/order/refresh"
+    payload = {
+        "loginId": uuid,
+    }
+
+    response = requests.post(url=url, headers=headers, json=payload)
+    if response.status_code is not 200 or response.json().get("data") is None:
+        logger.warning(f"query orders failed, response data is {response.json()}")
+        return None
+
+    data = response.json().get("data")
+    pairs = []
+    for d in data:
+        # status = 0: not paid
+        # status=1 paid not collect
+        # status=2 collected
+        if d.get("status") == 0:
+            order_id = d.get("id")
+            trip_id = d.get("trainNumber")
+            pairs.append((order_id, trip_id))
+    print(f"queried {len(pairs)} unpaid orders")
+
+    return pairs
+
+
+def _pay_one_order(order_id, trip_id, headers: dict = {}):
+    url = f"{base_address}/api/v1/inside_pay_service/inside_payment"
+    payload = {
+        "orderId": order_id,
+        "tripId": trip_id
+    }
+
+    response = requests.post(url=url, headers=headers,
+                             json=payload)
+
+    if response.status_code == 200:
+        print(f"{order_id} pay success")
+    else:
+        print(f"pay {order_id} failed!")
+        return None
+
+    return order_id
+
+
 if __name__ == '__main__':
     #_query_food(headers=headers)
     #_query_high_speed_ticket(headers=headers)
-    _query_contacts(headers=headers)
-
+    #_query_contacts(headers=headers)
+    #_query_orders(headers=headers)
+    _pay_one_order("7502fb68-8433-44b6-b0a4-cc36651e0ea4",
+                   "Z1234",
+                   headers=headers)
 

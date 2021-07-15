@@ -1,33 +1,35 @@
 from atomic_queries import _query_high_speed_ticket, _query_normal_ticket, _query_assurances, _query_food, _query_contacts
+from utils import random_boolean, random_phone, random_str, random_form_list
 
 import logging
 import random
-from typing import List
-import string
 import requests
+import time
 
-logger = logging.getLogger("main")
+logger = logging.getLogger("query_and_preserve")
 headers = {
     "Cookie": "JSESSIONID=E629E6ACA021C7DD4DC00AC6F2F97D7F; YsbCaptcha=3B591B44263E4C8C9CE44F515BF735B6",
     "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyNjMzNTk3NCwiZXhwIjoxNjI2MzM5NTc0fQ.uH-tN-9qlmZV-2KrflPenR87AaHPdhECTehWMj8wS4g",
     "Content-Type": "application/json"
 }
-# The UUID of fdse_microservice is that
+
+# The UUID of user fdse_microservice is that
 uuid = "4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f"
-# TODO: 自动化日期
-date = "2021-07-15"
+date = time.strftime("%Y-%m-%d", time.localtime())
 
 base_address = "http://139.196.152.44:31000"
 
 
 """
-    查询Order并付款未付款Order
-    5. 查询ticket并Collect所有票
-    6. 查询可进站票并进站所有票
+TODO:
+  
+  5. 查询ticket并Collect所有票
+  6. 查询可进站票并进站所有票
 """
 def query_and_preserve():
     """
-    查票、付款、取票(Collect)、入站
+
+  dedddwqdqwqwd  查票、付款、取票(Collect)、入站
 
     1. 查票（随机高铁或普通）
     2. 查保险、Food、Contacts
@@ -112,30 +114,6 @@ def query_and_preserve():
     print(res.json())
     if res.json()["data"] != "Success":
         raise Exception(res.json() + " not success")
-
-
-def query_order_and_pay():
-    """
-    查询Order并付款未付款Order
-    :return:
-    """
-    pass
-
-
-def random_boolean() -> bool:
-    return random.choice([True, False])
-
-
-def random_form_list(l: List):
-    return random.choice(l)
-
-
-def random_str():
-    ''.join(random.choices(string.ascii_letters, k=random.randint(4, 10)))
-
-
-def random_phone():
-    ''.join(random.choices(string.digits, k=random.randint(8, 15)))
 
 
 if __name__ == '__main__':
