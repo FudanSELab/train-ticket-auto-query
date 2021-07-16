@@ -17,6 +17,27 @@ uuid = "4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f"
 
 
 def _login():
+    url = f"{base_address}/api/v1/users/login"
+    payload = {
+        "password": "111111",
+        "username": "fdse_microservice",
+        "verificationCode": "1234"
+    }
+
+    r = requests.post(url=url,
+                      data=payload)
+
+    if r.status_code == 200:
+        data = r.json().get("data")
+        uid = data.get("userId")
+        token = data.get("token")
+
+        return uid, token
+
+    return None
+
+
+def admin_login():
     pass
 
 
@@ -235,12 +256,63 @@ def _enter_station(order_id, headers: dict = {}):
     return order_id
 
 
+def _query_cheapest(date="2021-12-31", headers: dict = {}):
+    url = f"{base_address}/api/v1/travelplanservice/travelPlan/cheapest"
+
+    payload= {
+        "departureTime": date,
+        "endPlace": "Shang Hai",
+        "startingPlace": "Nan Jing"
+    }
+
+    r = requests.post(url=url, json=payload, headers=headers)
+    if r.status_code == 200:
+        print("query cheapest success")
+    else:
+        print("query cheapest failed")
+
+
+def _query_min_station(date="2021-12-31", headers: dict = {}):
+    url = f"{base_address}/api/v1/travelplanservice/travelPlan/minStation"
+
+    payload = {
+        "departureTime": date,
+        "endPlace": "Shang Hai",
+        "startingPlace": "Nan Jing"
+    }
+
+    r = requests.post(url=url, json=payload, headers=headers)
+    if r.status_code == 200:
+        print("query min station success")
+    else:
+        print("query min station failed")
+
+
+def _query_quickest(date="2021-12-31", headers: dict = {}):
+    url = f"{base_address}/api/v1/travelplanservice/travelPlan/quickest"
+
+    payload = {
+        "departureTime": date,
+        "endPlace": "Shang Hai",
+        "startingPlace": "Nan Jing"
+    }
+
+    r = requests.post(url=url, json=payload, headers=headers)
+    if r.status_code == 200:
+        print("query quickest success")
+    else:
+        print("query quickest failed")
+
+
 if __name__ == '__main__':
     #_query_food(headers=headers)
     #_query_high_speed_ticket(headers=headers)
     #_query_contacts(headers=headers)
     #_query_orders(headers=headers)
-    _pay_one_order("7502fb68-8433-44b6-b0a4-cc36651e0ea4",
-                   "Z1234",
-                   headers=headers)
+    #_pay_one_order("7502fb68-8433-44b6-b0a4-cc36651e0ea4",
+    #               "Z1234",
+    #               headers=headers)
 
+    _query_cheapest()
+    _query_min_station()
+    _query_quickest()

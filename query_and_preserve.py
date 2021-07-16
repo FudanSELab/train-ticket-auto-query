@@ -7,12 +7,6 @@ import requests
 import time
 
 logger = logging.getLogger("query_and_preserve")
-headers = {
-    "Cookie": "JSESSIONID=E629E6ACA021C7DD4DC00AC6F2F97D7F; YsbCaptcha=3B591B44263E4C8C9CE44F515BF735B6",
-    "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyNjMzNTk3NCwiZXhwIjoxNjI2MzM5NTc0fQ.uH-tN-9qlmZV-2KrflPenR87AaHPdhECTehWMj8wS4g",
-    "Content-Type": "application/json"
-}
-
 # The UUID of user fdse_microservice is that
 uuid = "4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f"
 date = time.strftime("%Y-%m-%d", time.localtime())
@@ -20,13 +14,7 @@ date = time.strftime("%Y-%m-%d", time.localtime())
 base_address = "http://139.196.152.44:31000"
 
 
-"""
-TODO:
-  
-  5. 查询ticket并Collect所有票
-  6. 查询可进站票并进站所有票
-"""
-def query_and_preserve():
+def query_and_preserve(headers):
     """
 
   dedddwqdqwqwd  查票、付款、取票(Collect)、入站
@@ -117,10 +105,15 @@ def query_and_preserve():
 
 
 if __name__ == '__main__':
+    headers = {
+        "Cookie": "JSESSIONID=CAF07ABCB2031807D1C6043730C69F17; YsbCaptcha=ABF26F4AE563405894B1540057F62E7B",
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyNjM0NDgyNSwiZXhwIjoxNjI2MzQ4NDI1fQ.4eOMmQDhnq-Hjj1DuiH8duT6rXkP0QfeTnaXwvYGKD4",
+        "Content-Type": "application/json"
+    }
 
     for i in range(100):
         try:
-            query_and_preserve()
+            query_and_preserve(headers=headers)
             print("*****************************TIME:" + str(i))
         except Exception as e:
             print(e)
