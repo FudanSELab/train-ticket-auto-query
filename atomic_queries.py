@@ -18,14 +18,26 @@ uuid = "4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f"
 
 def _login():
     url = f"{base_address}/api/v1/users/login"
-    payload = {
-        "password": "111111",
-        "username": "fdse_microservice",
-        "verificationCode": "1234"
+
+    cookies = {
+        'JSESSIONID': '9ED5635A2A892A4BA31E7E98533A279D',
+        'YsbCaptcha': '025080CF8BA94594B09E283F17815444',
     }
 
-    r = requests.post(url=url,
-                      data=payload)
+    headers = {
+        'Proxy-Connection': 'keep-alive',
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'X-Requested-With': 'XMLHttpRequest',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36',
+        'Content-Type': 'application/json',
+        'Origin': 'http://139.196.152.44:31000',
+        'Referer': 'http://139.196.152.44:31000/client_login.html',
+        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+    }
+
+    data = '{"username":"fdse_microservice","password":"111111","verificationCode":"1234"}'
+
+    r = requests.post('http://139.196.152.44:31000/api/v1/users/login', headers=headers, cookies=cookies, data=data, verify=False)
 
     if r.status_code == 200:
         data = r.json().get("data")
@@ -34,7 +46,7 @@ def _login():
 
         return uid, token
 
-    return None
+    return None, None
 
 
 def admin_login():
@@ -65,7 +77,7 @@ def _query_high_speed_ticket(place_pair: tuple = ("Shang Hai", "Su Zhou"), heade
                              json=payload)
 
     if response.status_code is not 200 or response.json().get("data") is None:
-        logger.warning(f"request for {url} failed. response data is {response.json()}")
+        logger.warning(f"request for {url} failed. response data is {response.text}")
         return None
 
     data = response.json().get("data")  # type: dict
@@ -181,7 +193,7 @@ def _query_orders(headers: dict = {}, types: tuple = tuple([0]), query_other: bo
 
     response = requests.post(url=url, headers=headers, json=payload)
     if response.status_code is not 200 or response.json().get("data") is None:
-        logger.warning(f"query orders failed, response data is {response.json()}")
+        logger.warning(f"query orders failed, response data is {response.text}")
         return None
 
     data = response.json().get("data")
@@ -313,6 +325,7 @@ if __name__ == '__main__':
     #               "Z1234",
     #               headers=headers)
 
-    _query_cheapest()
-    _query_min_station()
-    _query_quickest()
+    a, b = _login()
+    print(a)
+    print(b)
+

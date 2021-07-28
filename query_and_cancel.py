@@ -2,7 +2,7 @@ from atomic_queries import _query_orders, _cancel_one_order
 from utils import random_form_list
 
 
-def query_one_and_cancel(uuid, headers):
+def query_one_and_cancel(headers, uuid="4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f"):
     """
     查询order并取消order
     :param uuid:

@@ -16,9 +16,6 @@ base_address = "http://139.196.152.44:31000"
 
 def query_and_preserve(headers):
     """
-
-  dedddwqdqwqwd  查票、付款、取票(Collect)、入站
-
     1. 查票（随机高铁或普通）
     2. 查保险、Food、Contacts
     3. 随机选择Contacts、保险、是否买食物、是否托运
@@ -106,14 +103,20 @@ def query_and_preserve(headers):
 
 if __name__ == '__main__':
     headers = {
-        "Cookie": "JSESSIONID=CAF07ABCB2031807D1C6043730C69F17; YsbCaptcha=ABF26F4AE563405894B1540057F62E7B",
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyNjM0NDgyNSwiZXhwIjoxNjI2MzQ4NDI1fQ.4eOMmQDhnq-Hjj1DuiH8duT6rXkP0QfeTnaXwvYGKD4",
+        "Cookie": "JSESSIONID=823B2652E3F5B64A1C94C924A05D80AF; YsbCaptcha=2E037F4AB09D49FA9EE3BE4E737EAFD2",
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyNzE5OTA0NCwiZXhwIjoxNjI3MjAyNjQ0fQ.3IIwwz7AwqHtOFDeXfih25i6_7nQBPL_K7BFxuyFiKQ",
         "Content-Type": "application/json"
     }
 
-    for i in range(100):
+    start_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
+    for i in range(1000):
         try:
             query_and_preserve(headers=headers)
-            print("*****************************TIME:" + str(i))
+            print("*****************************INDEX:" + str(i))
         except Exception as e:
             print(e)
+
+    end_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
+    print(f"start:{start_time} end:{end_time}")
