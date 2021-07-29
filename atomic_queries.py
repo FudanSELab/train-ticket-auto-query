@@ -16,7 +16,7 @@ headers = {
 uuid = "4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f"
 
 
-def _login():
+def _login(data):
     url = f"{base_address}/api/v1/users/login"
 
     cookies = {
@@ -30,14 +30,12 @@ def _login():
         'X-Requested-With': 'XMLHttpRequest',
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36',
         'Content-Type': 'application/json',
-        'Origin': 'http://10.176.122.6:32677',
-        'Referer': 'http://10.176.122.6:32677/client_login.html',
+        'Origin': url,
+        'Referer': f"{base_address}/client_login.html",
         'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
     }
 
-    data = '{"username":"fdse_microservice","password":"111111","verificationCode":"1234"}'
-
-    r = requests.post('http://10.176.122.6:32677/api/v1/users/login', headers=headers, cookies=cookies, data=data, verify=False)
+    r = requests.post(url, headers=headers, cookies=cookies, data=data, verify=False)
 
     if r.status_code == 200:
         data = r.json().get("data")
@@ -50,10 +48,19 @@ def _login():
 
 
 def admin_login():
-    pass
+    data = '{"username":"admin","password":"222222"}'
+
+    return _login(data)
 
 
-def _query_high_speed_ticket(place_pair: tuple = ("Shang Hai", "Su Zhou"), headers: dict = {}, time: str = "2021-07-15") -> List[str]:
+def user_login():
+    data = '{"username":"fdse_microservice","password":"111111"}'
+
+    return _login(data)
+
+
+def _query_high_speed_ticket(place_pair: tuple = ("Shang Hai", "Su Zhou"), headers: dict = {},
+                             time: str = "2021-07-15") -> List[str]:
     """
     返回TripId 列表
     :param place_pair: 使用的开始结束组对
@@ -89,7 +96,8 @@ def _query_high_speed_ticket(place_pair: tuple = ("Shang Hai", "Su Zhou"), heade
     return trip_ids
 
 
-def _query_normal_ticket(place_pair: tuple = ("Nan Jing", "Shang Hai"), headers: dict = {}, time: str = "2021-07-15") -> List[str]:
+def _query_normal_ticket(place_pair: tuple = ("Nan Jing", "Shang Hai"), headers: dict = {}, time: str = "2021-07-15") -> \
+        List[str]:
     url = f"{base_address}/api/v1/travel2service/trips/left"
     place_pairs = [("Shang Hai", "Nan Jing"),
                    ("Nan Jing", "Shang Hai")]
@@ -116,12 +124,9 @@ def _query_normal_ticket(place_pair: tuple = ("Nan Jing", "Shang Hai"), headers:
     return trip_ids
 
 
-
-
-
 def _query_assurances(headers: dict = {}):
     url = f"{base_address}/api/v1/assuranceservice/assurances/types"
-    response = requests.get(url=url,headers=headers)
+    response = requests.get(url=url, headers=headers)
     if response.status_code is not 200 or response.json().get("data") is None:
         logger.warning(f"query assurance failed, response data is {response.json()}")
         return None
@@ -165,12 +170,11 @@ def _query_contacts(headers: dict = {}) -> List[str]:
         return None
 
     data = response.json().get("data")
-    #print("contacts")
-    #pprint(data)
-
+    # print("contacts")
+    # pprint(data)
 
     ids = [d.get("id") for d in data if d.get("id") is not None]
-    #pprint(ids)
+    # pprint(ids)
     return ids
 
 
@@ -271,7 +275,7 @@ def _enter_station(order_id, headers: dict = {}):
 def _query_cheapest(date="2021-12-31", headers: dict = {}):
     url = f"{base_address}/api/v1/travelplanservice/travelPlan/cheapest"
 
-    payload= {
+    payload = {
         "departureTime": date,
         "endPlace": "Shang Hai",
         "startingPlace": "Nan Jing"
@@ -317,15 +321,15 @@ def _query_quickest(date="2021-12-31", headers: dict = {}):
 
 
 if __name__ == '__main__':
-    #_query_food(headers=headers)
-    #_query_high_speed_ticket(headers=headers)
-    #_query_contacts(headers=headers)
-    #_query_orders(headers=headers)
-    #_pay_one_order("7502fb68-8433-44b6-b0a4-cc36651e0ea4",
+    # _query_food(headers=headers)
+    # _query_high_speed_ticket(headers=headers)
+    # _query_contacts(headers=headers)
+    # _query_orders(headers=headers)
+    # _pay_one_order("7502fb68-8433-44b6-b0a4-cc36651e0ea4",
     #               "Z1234",
     #               headers=headers)
 
-    a, b = _login()
-    print(a)
-    print(b)
-
+    uid, token = user_login()
+    # uid, token = admin_login()
+    print(uid)
+    print(token)
