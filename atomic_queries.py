@@ -37,7 +37,8 @@ def _login():
 
     data = '{"username":"fdse_microservice","password":"111111","verificationCode":"1234"}'
 
-    r = requests.post('http://139.196.152.44:31000/api/v1/users/login', headers=headers, cookies=cookies, data=data, verify=False)
+    r = requests.post(url=url, headers=headers,
+                      cookies=cookies, data=data, verify=False)
 
     if r.status_code == 200:
         data = r.json().get("data")
@@ -209,6 +210,19 @@ def _query_orders(headers: dict = {}, types: tuple = tuple([0]), query_other: bo
     print(f"queried {len(pairs)} orders")
 
     return pairs
+
+
+def _query_route(routeId: str = '92708982-77af-4318-be25-57ccb0ff69ad', headers: dict = {}):
+    url = f"{base_address}/api/v1/routeservice/routes/{routeId}"
+
+    res = requests.get(url=url, headers=headers)
+
+    if res.status_code == 200:
+        print(f"query {routeId} success")
+    else:
+        print(f"query {routeId} fail")
+
+    return
 
 
 def _pay_one_order(order_id, trip_id, headers: dict = {}):
