@@ -4,7 +4,7 @@ from pprint import pprint
 import logging
 
 logger = logging.getLogger("atomic_queries")
-base_address = "http://139.196.152.44:31000"
+base_address = "http://10.176.122.6:32677"
 
 headers = {
     "Cookie": "JSESSIONID=CAF07ABCB2031807D1C6043730C69F17; YsbCaptcha=ABF26F4AE563405894B1540057F62E7B",
@@ -30,14 +30,14 @@ def _login():
         'X-Requested-With': 'XMLHttpRequest',
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36',
         'Content-Type': 'application/json',
-        'Origin': 'http://139.196.152.44:31000',
-        'Referer': 'http://139.196.152.44:31000/client_login.html',
+        'Origin': 'http://10.176.122.6:32677',
+        'Referer': 'http://10.176.122.6:32677/client_login.html',
         'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
     }
 
     data = '{"username":"fdse_microservice","password":"111111","verificationCode":"1234"}'
 
-    r = requests.post('http://139.196.152.44:31000/api/v1/users/login', headers=headers, cookies=cookies, data=data, verify=False)
+    r = requests.post('http://10.176.122.6:32677/api/v1/users/login', headers=headers, cookies=cookies, data=data, verify=False)
 
     if r.status_code == 200:
         data = r.json().get("data")
