@@ -1,5 +1,4 @@
-import logging
-import requests
+import time
 
 from atomic_queries import _query_orders, _pay_one_order
 from utils import random_form_list
@@ -29,10 +28,25 @@ def query_order_and_pay(headers):
 
 
 if __name__ == '__main__':
+    cookie = "JSESSIONID=823B2652E3F5B64A1C94C924A05D80AF; YsbCaptcha=2E037F4AB09D49FA9EE3BE4E737EAFD2"
+    Authorization = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyNzU0OTU5NSwiZXhwIjoxNjI3NTUzMTk1fQ.uDVxJn1v1StNmHw2mS8AnwKW2x4Suj547IOHtKKC-Sw"
+
     headers = {
-        "Cookie": "JSESSIONID=CAF07ABCB2031807D1C6043730C69F17; YsbCaptcha=ABF26F4AE563405894B1540057F62E7B",
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyNjM0NDgyNSwiZXhwIjoxNjI2MzQ4NDI1fQ.4eOMmQDhnq-Hjj1DuiH8duT6rXkP0QfeTnaXwvYGKD4",
+        'Connection': 'close',
+        "Cookie": f"{cookie}",
+        "Authorization": f"Bearer {Authorization}",
         "Content-Type": "application/json"
     }
 
-    query_order_and_pay(headers=headers)
+    start_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
+    for i in range(40):
+        try:
+            query_order_and_pay(headers=headers)
+            print("*****************************INDEX:" + str(i))
+        except Exception as e:
+            print(e)
+
+    end_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
+    print(f"start:{start_time} end:{end_time}")

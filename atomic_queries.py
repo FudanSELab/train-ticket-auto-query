@@ -141,7 +141,7 @@ def _query_food(place_pair: tuple = ("Shang Hai", "Su Zhou"), train_num: str = "
 
     response = requests.get(url=url, headers=headers)
     if response.status_code is not 200 or response.json().get("data") is None:
-        logger.warning(f"query food failed, response data is {response.json()}")
+        logger.warning(f"query food failed, response data is {response}")
         return None
     data = response.json().get("data")
 
@@ -318,6 +318,30 @@ def _query_quickest(date="2021-12-31", headers: dict = {}):
         print("query quickest success")
     else:
         print("query quickest failed")
+
+
+def _query_admin_basic_price(headers: dict = {}):
+    url = f"{base_address}/api/v1/adminbasicservice/adminbasic/prices"
+    response = requests.get(url=url,
+                            headers=headers)
+    if response.status_code == 200:
+        print(f"price success")
+        return response
+    else:
+        print(f"price failed")
+        return None
+
+
+def _query_admin_basic_config(headers: dict = {}):
+    url = f"{base_address}/api/v1/adminbasicservice/adminbasic/configs"
+    response = requests.get(url=url,
+                            headers=headers)
+    if response.status_code == 200:
+        print(f"config success")
+        return response
+    else:
+        print(f"config failed")
+        return None
 
 
 if __name__ == '__main__':
