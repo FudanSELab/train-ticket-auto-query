@@ -41,6 +41,7 @@ def _login():
                       cookies=cookies, data=data, verify=False)
 
     if r.status_code == 200:
+        print(r.text)
         data = r.json().get("data")
         uid = data.get("userId")
         token = data.get("token")
@@ -117,8 +118,33 @@ def _query_normal_ticket(place_pair: tuple = ("Nan Jing", "Shang Hai"), headers:
     return trip_ids
 
 
+def _query_advanced_ticket(place_pair: tuple = ("Nan Jing", "Shang Hai"), headers: dict = {}, time: str = "2021-07-15", type: str = "cheapest") -> List[str]:
+    url = f"{base_address}/api/v1/travelplanservice/travelPlan/" + type
+    print(url)
+    
+    payload = {
+        "departureTime": time,
+        "startingPlace": place_pair[0],
+        "endPlace": place_pair[1],
+    }
 
+    #print(payload)
 
+    response = requests.post(url=url,
+                             headers=headers,
+                             json=payload)
+    #print(response.text)
+    if response.status_code is not 200 or response.json().get("data") is None:
+        logger.warning(f"request for {url} failed. response data is {response.json()}")
+        return None
+    
+    data = response.json().get("data") 
+
+    trip_ids = []
+    for d in data:
+        trip_id = d.get("tripId")
+        trip_ids.append(trip_id)
+    return trip_ids
 
 def _query_assurances(headers: dict = {}):
     url = f"{base_address}/api/v1/assuranceservice/assurances/types"
