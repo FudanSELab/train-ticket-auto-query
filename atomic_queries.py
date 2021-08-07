@@ -1,5 +1,6 @@
 from typing import List
 import requests
+import time
 from pprint import pprint
 import logging
 
@@ -9,7 +10,8 @@ base_address = "http://10.176.122.6:32677"
 headers = {
     "Cookie": "JSESSIONID=CAF07ABCB2031807D1C6043730C69F17; YsbCaptcha=ABF26F4AE563405894B1540057F62E7B",
     "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyNjM0NDgyNSwiZXhwIjoxNjI2MzQ4NDI1fQ.4eOMmQDhnq-Hjj1DuiH8duT6rXkP0QfeTnaXwvYGKD4",
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    "Connection": "close"
 }
 
 # The UUID of fdse_microservice is that
@@ -178,7 +180,7 @@ def _query_contacts(headers: dict = {}) -> List[str]:
     return ids
 
 
-def _query_orders(headers: dict = {}, types: tuple = tuple([0]), query_other: bool = False) -> List[tuple]:
+def _query_orders(headers: dict = {}, types: tuple = tuple([0]), query_other: bool = False) -> List[dict]:
     """
     返回(orderId, tripId) triple list for inside_pay_service
     :param headers:
@@ -213,6 +215,70 @@ def _query_orders(headers: dict = {}, types: tuple = tuple([0]), query_other: bo
     print(f"queried {len(pairs)} orders")
 
     return pairs
+
+
+def _query_orders_all_info(headers: dict = {}, query_other: bool = False) -> List[tuple]:
+    """
+    返回(orderId, tripId) triple list for consign service
+    :param headers:
+    :return:
+    """
+
+    if query_other:
+        url = f"{base_address}/api/v1/orderOtherService/orderOther/refresh"
+    else:
+        url = f"{base_address}/api/v1/orderservice/order/refresh"
+
+    payload = {
+        "loginId": uuid,
+    }
+
+    response = requests.post(url=url, headers=headers, json=payload)
+    if response.status_code is not 200 or response.json().get("data") is None:
+        logger.warning(f"query orders failed, response data is {response.text}")
+        return None
+
+    data = response.json().get("data")
+    pairs = []
+    for d in data:
+        result = {}
+        result["accountId"] = d.get("accountId")
+        result["targetDate"] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+        result["orderId"] = d.get("id")
+        result["from"] = d.get("from")
+        result["to"] = d.get("to")
+        pairs.append(result)
+    print(f"queried {len(pairs)} orders")
+
+    return pairs
+
+
+def _put_consign(result, headers: dict = {}):
+    url = f"{base_address}/api/v1/consignservice/consigns"
+    consignload = {
+        "accountId": result["accountId"],
+        "handleDate": time.strftime('%Y-%m-%d', time.localtime(time.time())),
+        "targetDate": result["targetDate"],
+        "from": result["from"],
+        "to": result["to"],
+        "orderId": result["orderId"],
+        "consignee": "32",
+        "phone": "12345677654",
+        "weight": "32",
+        "id": "",
+        "isWithin": False
+    }
+    response = requests.put(url=url, headers=headers,
+                            json=consignload)
+
+    order_id = result["orderId"]
+    if response.status_code == 200 | response.status_code == 201:
+        print(f"{order_id} put consign success")
+    else:
+        print(f"{order_id} failed!")
+        return None
+
+    return order_id
 
 
 def _pay_one_order(order_id, trip_id, headers: dict = {}):
@@ -355,5 +421,4 @@ if __name__ == '__main__':
 
     uid, token = user_login()
     # uid, token = admin_login()
-    print(uid)
     print(token)

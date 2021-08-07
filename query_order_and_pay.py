@@ -4,18 +4,11 @@ from atomic_queries import _query_orders, _pay_one_order
 from utils import random_form_list
 
 
-def query_order_and_pay(headers):
+def query_order_and_pay(headers, pairs):
     """
     查询Order并付款未付款Order
     :return:
     """
-    pairs = _query_orders(headers=headers, types=tuple([0, 1]))
-    pairs2 = _query_orders(headers=headers, types=tuple([0, 1]), query_other=True)
-
-    if not pairs and not pairs2:
-        return
-
-    pairs = pairs + pairs2
 
     # (orderId, tripId) pair
     pair = random_form_list(pairs)
@@ -29,8 +22,7 @@ def query_order_and_pay(headers):
 
 if __name__ == '__main__':
     cookie = "JSESSIONID=823B2652E3F5B64A1C94C924A05D80AF; YsbCaptcha=2E037F4AB09D49FA9EE3BE4E737EAFD2"
-    Authorization = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyNzU0OTU5NSwiZXhwIjoxNjI3NTUzMTk1fQ.uDVxJn1v1StNmHw2mS8AnwKW2x4Suj547IOHtKKC-Sw"
-
+    Authorization = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyODM1NTQ5NCwiZXhwIjoxNjI4MzU5MDk0fQ.Zqaa29QkIr1dYA9S6Yv2hHMVlLuL9ScTMIKSzQmRG-M"
     headers = {
         'Connection': 'close',
         "Cookie": f"{cookie}",
@@ -40,12 +32,19 @@ if __name__ == '__main__':
 
     start_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
-    for i in range(40):
-        try:
-            query_order_and_pay(headers=headers)
-            print("*****************************INDEX:" + str(i))
-        except Exception as e:
-            print(e)
+    pairs = _query_orders(headers=headers, types=tuple([0, 1]))
+    pairs2 = _query_orders(headers=headers, types=tuple([0, 1]), query_other=True)
+
+    pairs = pairs + pairs2
+
+    for j in range(7):
+        for i in range(40):
+            try:
+                query_order_and_pay(headers=headers, pairs=pairs)
+                print("*****************************INDEX:" + str(j * 40 + i))
+            except Exception as e:
+                print(e)
+        time.sleep(10)
 
     end_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
