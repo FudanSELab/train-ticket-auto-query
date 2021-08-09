@@ -2,6 +2,7 @@ from typing import List
 import requests
 from pprint import pprint
 import logging
+import time
 
 logger = logging.getLogger("atomic_queries")
 base_address = "http://139.196.152.44:31000"
@@ -15,8 +16,11 @@ headers = {
 # The UUID of fdse_microservice is that
 uuid = "4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f"
 
+date = time.strftime("%Y-%m-%d", time.localtime())
 
-def _login():
+
+
+def _login(username="fdse_microservice", password="111111"):
     url = f"{base_address}/api/v1/users/login"
 
     cookies = {
@@ -35,7 +39,7 @@ def _login():
         'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
     }
 
-    data = '{"username":"fdse_microservice","password":"111111","verificationCode":"1234"}'
+    data = '{"username":"' + username + '","password":"' + password + '","verificationCode":"1234"}'
 
     r = requests.post(url=url, headers=headers,
                       cookies=cookies, data=data, verify=False)
@@ -47,7 +51,7 @@ def _login():
         token = data.get("token")
 
         return uid, token
-
+    print(r.text)
     return None, None
 
 
@@ -356,6 +360,35 @@ def _query_quickest(date="2021-12-31", headers: dict = {}):
         print("query quickest failed")
 
 
+def _rebook_ticket(old_order_id, old_trip_id, new_trip_id, new_date, new_seat_type, headers):
+    url = f"{base_address}/api/v1/rebookservice/rebook"
+
+    payload = {
+        "oldTripId": old_trip_id,
+        "orderId": old_order_id,
+        "tripId": new_trip_id,
+        "date": new_date,
+        "seatType": new_seat_type
+    }
+    print(payload)
+    r = requests.post(url=url, json=payload, headers=headers)
+    if r.status_code == 200:
+        print(r.text)
+    else:
+        print(f"Request Failed: status code: {r.status_code}")
+        print(r.text)
+
+def _query_admin_travel(headers):
+    url = f"{base_address}/api/v1/admintravelservice/admintravel"
+
+    r = requests.get(url=url,headers=headers)
+    if r.status_code == 200 and r.json()["status"] == 1:
+        print("success to query admin travel")
+    else:
+        print(f"faild to query admin travel with status_code: {r.status_code}")
+
+
+
 if __name__ == '__main__':
     #_query_food(headers=headers)
     #_query_high_speed_ticket(headers=headers)
@@ -365,7 +398,22 @@ if __name__ == '__main__':
     #               "Z1234",
     #               headers=headers)
 
-    a, b = _login()
-    print(a)
-    print(b)
+    _, token = _login(username="admin", password="222222")
+
+    headers = {
+        "Cookie": "JSESSIONID=DBE6EC845809D4BFEA66D76BA600995F; YsbCaptcha=63EEEE0E2D564384A7C0052999F3AEA6",
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyNjM0OTcxOSwiZXhwIjoxNjI2MzUzMzE5fQ.nUTB1SI_gikEm8z8M6EQeyPuQx5zKevo40Y2rqf1EN4",
+        "Content-Type": "application/json"
+    }
+    headers["Authorization"] = "Bearer " + token
+
+    start_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
+    for i in range(300):
+        _query_admin_travel(headers=headers)
+        print("*****************************INDEX:" + str(i))
+    
+    end_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    print(f"start:{start_time} end:{end_time}")
+
 
