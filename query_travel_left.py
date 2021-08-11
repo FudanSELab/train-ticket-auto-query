@@ -25,7 +25,7 @@ def query_travel_left(headers):
     trip_ids = []
     PRESERVE_URL = ""
 
-    high_speed = True
+    high_speed = False
     if high_speed:
         start = "Shang Hai"
         end = "Su Zhou"
@@ -40,7 +40,7 @@ def query_travel_left(headers):
 
 if __name__ == '__main__':
     cookie = "JSESSIONID=823B2652E3F5B64A1C94C924A05D80AF; YsbCaptcha=2E037F4AB09D49FA9EE3BE4E737EAFD2"
-    Authorization = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyODY5NTA1MSwiZXhwIjoxNjI4Njk4NjUxfQ.LJr_F_IS4VYNXtzqJNNvpW8bwRyCIHKKbHt3o157bXc"
+    Authorization = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyODcwNjQ5NSwiZXhwIjoxNjI4NzEwMDk1fQ.1G93WmGzGG11uc9dY4AAuJxiGlmjl12UXSAngNwPSXk"
     headers = {
         'Connection': 'close',
         "Cookie": f"{cookie}",
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     start_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     print(f"start:{start_time}")
 
-    for i in range(300):
+    for i in range(30):
         try:
             query_travel_left(headers=headers)
             print("*****************************INDEX:" + str(i))

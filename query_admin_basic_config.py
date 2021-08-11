@@ -17,7 +17,7 @@ def query_admin_basic_config(headers):
 
 if __name__ == '__main__':
     cookie = "JSESSIONID=823B2652E3F5B64A1C94C924A05D80AF; YsbCaptcha=2E037F4AB09D49FA9EE3BE4E737EAFD2"
-    Authorization = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyODY5NTc1NSwiZXhwIjoxNjI4Njk5MzU1fQ.YaFNZq-mp64RL9TeEibk-fwQu46MIoOIlkhe5QIJ0D8"
+    Authorization = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyODcwNzMxMCwiZXhwIjoxNjI4NzEwOTEwfQ.4TakdJtnTwHBViZtyI3EH7tZYdd--fJrRKHVoKQzQLY"
     headers = {
         'Connection': 'close',
         "Cookie": f"{cookie}",
@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     start_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
-    for i in range(320):
+    for i in range(330):
         try:
             query_admin_basic_config(headers=headers)
             print("*****************************INDEX:" + str(i))
