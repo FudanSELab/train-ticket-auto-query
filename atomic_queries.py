@@ -5,7 +5,7 @@ from pprint import pprint
 import logging
 
 logger = logging.getLogger("atomic_queries")
-base_address = "http://139.196.152.44:31000/"
+base_address = "http://139.196.152.44:31000"
 
 headers = {
     "Cookie": "JSESSIONID=CAF07ABCB2031807D1C6043730C69F17; YsbCaptcha=ABF26F4AE563405894B1540057F62E7B",
@@ -35,6 +35,7 @@ def _login(data):
         'Origin': url,
         'Referer': f"{base_address}/client_login.html",
         'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+        'Connection': 'close'
     }
 
     r = requests.post(url, headers=headers, cookies=cookies, data=data, verify=False)

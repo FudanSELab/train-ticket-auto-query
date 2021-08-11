@@ -23,7 +23,7 @@ def query_one_and_put_consign(headers, pairs):
 
 if __name__ == '__main__':
     cookie = "JSESSIONID=823B2652E3F5B64A1C94C924A05D80AF; YsbCaptcha=2E037F4AB09D49FA9EE3BE4E737EAFD2"
-    Authorization = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyODM1NDQxNCwiZXhwIjoxNjI4MzU4MDE0fQ.6fvQ66owWQ1VQntt4EhiNmCyax7GfEx0TACLjRYFj-Y"
+    Authorization = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyODcwMzQ5NSwiZXhwIjoxNjI4NzA3MDk1fQ.HkehJkZ8E4zdd2q83uydtvdmEH-fvu5bH5Y9bwzsIIk"
     headers = {
         'Connection': 'close',
         "Cookie": f"{cookie}",
@@ -39,14 +39,12 @@ if __name__ == '__main__':
 
     pairs = pairs + pairs2
 
-    for j in range(7):
-        for i in range(40):
-            try:
-                query_one_and_put_consign(headers=headers, pairs=pairs)
-                print("*****************************INDEX:" + str(j * 10 + i))
-            except Exception as e:
-                print(e)
-        time.sleep(10)
+    for i in range(330):
+        try:
+            query_one_and_put_consign(headers=headers, pairs=pairs)
+            print("*****************************INDEX:" + str(i))
+        except Exception as e:
+            print(e)
 
     end_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 

@@ -8,7 +8,7 @@ logger = logging.getLogger("query_and_preserve")
 uuid = "4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f"
 date = time.strftime("%Y-%m-%d", time.localtime())
 
-base_address = "http://139.196.152.44:31000/"
+base_address = "http://139.196.152.44:31000"
 
 
 def query_admin_basic_price(headers):
@@ -17,7 +17,7 @@ def query_admin_basic_price(headers):
 
 if __name__ == '__main__':
     cookie = "JSESSIONID=823B2652E3F5B64A1C94C924A05D80AF; YsbCaptcha=2E037F4AB09D49FA9EE3BE4E737EAFD2"
-    Authorization = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyODM1NjQxMiwiZXhwIjoxNjI4MzYwMDEyfQ.rUVQuhY_m-oDyREPI5tn1Qv9mNzOI_xwvZwtCyfzDMo"
+    Authorization = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyODY5NTc1NSwiZXhwIjoxNjI4Njk5MzU1fQ.YaFNZq-mp64RL9TeEibk-fwQu46MIoOIlkhe5QIJ0D8"
     headers = {
         'Connection': 'close',
         "Cookie": f"{cookie}",
@@ -27,14 +27,12 @@ if __name__ == '__main__':
 
     start_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
-    for j in range(7):
-        for i in range(40):
-            try:
-                query_admin_basic_price(headers=headers)
-                print("*****************************INDEX:" + str(j * 40 + i))
-            except Exception as e:
-                print(e)
-        time.sleep(10)
+    for i in range(320):
+        try:
+            query_admin_basic_price(headers=headers)
+            print("*****************************INDEX:" + str(i))
+        except Exception as e:
+            print(e)
     end_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
     print(f"start:{start_time} end:{end_time}")

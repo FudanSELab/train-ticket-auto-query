@@ -12,7 +12,7 @@ logger = logging.getLogger("query_and_preserve")
 uuid = "4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f"
 date = time.strftime("%Y-%m-%d", time.localtime())
 
-base_address = "http://139.196.152.44:31000/"
+base_address = "http://139.196.152.44:31000"
 
 
 def query_and_preserve_consign(headers):
@@ -55,7 +55,10 @@ def query_and_preserve_consign(headers):
         "to": end,
         "tripId": ""
     }
+    return base_preserve_payload, contacts_result, trip_ids, PRESERVE_URL, high_speed
 
+
+def preserve(base_preserve_payload, contacts_result, trip_ids, PRESERVE_URL, high_speed, headers):
     trip_id = random_form_list(trip_ids)
     base_preserve_payload["tripId"] = trip_id
 
@@ -110,24 +113,24 @@ def query_and_preserve_consign(headers):
 
 if __name__ == '__main__':
     cookie = "JSESSIONID=823B2652E3F5B64A1C94C924A05D80AF; YsbCaptcha=2E037F4AB09D49FA9EE3BE4E737EAFD2"
-    Authorization = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyODM1MTI2MSwiZXhwIjoxNjI4MzU0ODYxfQ.KrzOt46Xu48Ortq-pB69tBRXFFmwTrU0cbbRj870fpw"
+    Authorization = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyODcwMzQ5NSwiZXhwIjoxNjI4NzA3MDk1fQ.HkehJkZ8E4zdd2q83uydtvdmEH-fvu5bH5Y9bwzsIIk"
     headers = {
         'Connection': 'close',
         "Cookie": f"{cookie}",
         "Authorization": f"Bearer {Authorization}",
         "Content-Type": "application/json"
     }
+    base_preserve_payload, contacts_result, trip_ids, PRESERVE_URL, high_speed = query_and_preserve_consign(
+        headers=headers)
 
     start_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
-    for j in range(7):
-        for i in range(40):
-            try:
-                query_and_preserve_consign(headers=headers)
-                print("*****************************INDEX:" + str(j * 10 + i))
-            except Exception as e:
-                print(e)
-        time.sleep(10)
+    for i in range(330):
+        try:
+            preserve(base_preserve_payload, contacts_result, trip_ids, PRESERVE_URL, high_speed, headers)
+            print("*****************************INDEX:" + str(i))
+        except Exception as e:
+            print(e)
 
     end_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 

@@ -12,7 +12,7 @@ logger = logging.getLogger("query_and_preserve")
 uuid = "4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f"
 date = time.strftime("%Y-%m-%d", time.localtime())
 
-base_address = "http://139.196.152.44:31000/"
+base_address = "http://139.196.152.44:31000"
 
 
 def query_and_preserve_food(headers):
@@ -28,7 +28,7 @@ def query_and_preserve_food(headers):
     trip_ids = []
     PRESERVE_URL = ""
 
-    high_speed = False
+    high_speed = True
     need_food = True
 
     if high_speed:
@@ -99,6 +99,10 @@ def query_and_preserve_food(headers):
     print(
         f"choices: preserve_high: {high_speed} need_food:{need_food}  need_consign: {need_consign}  need_assurance:{need_assurance}")
 
+    return PRESERVE_URL, base_preserve_payload
+
+
+def preserve(PRESERVE_URL, base_preserve_payload, headers):
     res = requests.post(url=PRESERVE_URL,
                         headers=headers,
                         json=base_preserve_payload)
@@ -110,7 +114,8 @@ def query_and_preserve_food(headers):
 
 if __name__ == '__main__':
     cookie = "JSESSIONID=823B2652E3F5B64A1C94C924A05D80AF; YsbCaptcha=2E037F4AB09D49FA9EE3BE4E737EAFD2"
-    Authorization = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyODM1OTY4NywiZXhwIjoxNjI4MzYzMjg3fQ.7KmS6Rw_td41Or4-pjOnLlCpDqKYf1bQJn4ycLEP6KE"
+    Authorization = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyODY5ODgzMiwiZXhwIjoxNjI4NzAyNDMyfQ.dfjI2QxU7JdBinl5RcDcccIcp-6Y0TO_TWLrdmET_48"
+
     headers = {
         'Connection': 'close',
         "Cookie": f"{cookie}",
@@ -118,16 +123,16 @@ if __name__ == '__main__':
         "Content-Type": "application/json"
     }
 
+
     start_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
-    for j in range(7):
-        for i in range(40):
-            try:
-                query_and_preserve_food(headers=headers)
-                print("*****************************INDEX:" + str(j * 10 + i))
-            except Exception as e:
-                print(e)
-        time.sleep(10)
+    for i in range(330):
+        try:
+            PRESERVE_URL, base_preserve_payload = query_and_preserve_food(headers)
+            preserve(PRESERVE_URL, base_preserve_payload, headers)
+            print("*****************************INDEX:" + str(i))
+        except Exception as e:
+            print(e)
 
     end_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
