@@ -1,8 +1,7 @@
 from typing import List
 import requests
-import time
-from pprint import pprint
 import logging
+import time
 
 logger = logging.getLogger("atomic_queries")
 base_address = "http://139.196.152.44:31000"
@@ -17,8 +16,10 @@ headers = {
 # The UUID of fdse_microservice is that
 uuid = "4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f"
 
+date = time.strftime("%Y-%m-%d", time.localtime())
 
-def _login(data):
+
+def _login(username="fdse_microservice", password="111111"):
     url = f"{base_address}/api/v1/users/login"
 
     cookies = {
@@ -38,7 +39,10 @@ def _login(data):
         'Connection': 'close'
     }
 
-    r = requests.post(url, headers=headers, cookies=cookies, data=data, verify=False)
+    data = '{"username":"' + username + '","password":"' + password + '"}'
+
+    r = requests.post(url=url, headers=headers,
+                      cookies=cookies, data=data, verify=False)
 
     if r.status_code == 200:
         data = r.json().get("data")
@@ -48,18 +52,6 @@ def _login(data):
         return uid, token
 
     return None, None
-
-
-def admin_login():
-    data = '{"username":"admin","password":"222222"}'
-
-    return _login(data)
-
-
-def user_login():
-    data = '{"username":"fdse_microservice","password":"111111"}'
-
-    return _login(data)
 
 
 def _query_high_speed_ticket(place_pair: tuple = ("Shang Hai", "Su Zhou"), headers: dict = {},
@@ -126,8 +118,9 @@ def _query_normal_ticket(place_pair: tuple = ("Nan Jing", "Shang Hai"), headers:
         trip_ids.append(trip_id)
     return trip_ids
 
+
 def _query_high_speed_ticket_parallel(place_pair: tuple = ("Shang Hai", "Su Zhou"), headers: dict = {},
-                             time: str = "2021-07-15") -> List[str]:
+                                      time: str = "2021-07-15") -> List[str]:
     """
     返回TripId 列表
     :param place_pair: 使用的开始结束组对
@@ -161,6 +154,37 @@ def _query_high_speed_ticket_parallel(place_pair: tuple = ("Shang Hai", "Su Zhou
         trip_id = d.get("tripId").get("type") + d.get("tripId").get("number")
         trip_ids.append(trip_id)
     return trip_ids
+
+
+def _query_advanced_ticket(place_pair: tuple = ("Nan Jing", "Shang Hai"), headers: dict = {}, time: str = "2021-07-15",
+                           type: str = "cheapest") -> List[str]:
+    url = f"{base_address}/api/v1/travelplanservice/travelPlan/" + type
+    print(url)
+
+    payload = {
+        "departureTime": time,
+        "startingPlace": place_pair[0],
+        "endPlace": place_pair[1],
+    }
+
+    # print(payload)
+
+    response = requests.post(url=url,
+                             headers=headers,
+                             json=payload)
+    # print(response.text)
+    if response.status_code is not 200 or response.json().get("data") is None:
+        logger.warning(f"request for {url} failed. response data is {response.json()}")
+        return None
+
+    data = response.json().get("data")
+
+    trip_ids = []
+    for d in data:
+        trip_id = d.get("tripId")
+        trip_ids.append(trip_id)
+    return trip_ids
+
 
 def _query_assurances(headers: dict = {}):
     url = f"{base_address}/api/v1/assuranceservice/assurances/types"
@@ -317,6 +341,19 @@ def _put_consign(result, headers: dict = {}):
     return order_id
 
 
+def _query_route(routeId: str = '92708982-77af-4318-be25-57ccb0ff69ad', headers: dict = {}):
+    url = f"{base_address}/api/v1/routeservice/routes/{routeId}"
+
+    res = requests.get(url=url, headers=headers)
+
+    if res.status_code == 200:
+        print(f"query {routeId} success")
+    else:
+        print(f"query {routeId} fail")
+
+    return
+
+
 def _pay_one_order(order_id, trip_id, headers: dict = {}):
     url = f"{base_address}/api/v1/inside_pay_service/inside_payment"
     payload = {
@@ -446,15 +483,35 @@ def _query_admin_basic_config(headers: dict = {}):
         return None
 
 
-if __name__ == '__main__':
-    # _query_food(headers=headers)
-    # _query_high_speed_ticket(headers=headers)
-    # _query_contacts(headers=headers)
-    # _query_orders(headers=headers)
-    # _pay_one_order("7502fb68-8433-44b6-b0a4-cc36651e0ea4",
-    #               "Z1234",
-    #               headers=headers)
+def _rebook_ticket(old_order_id, old_trip_id, new_trip_id, new_date, new_seat_type, headers):
+    url = f"{base_address}/api/v1/rebookservice/rebook"
 
-    uid, token = user_login()
-    # uid, token = admin_login()
+    payload = {
+        "oldTripId": old_trip_id,
+        "orderId": old_order_id,
+        "tripId": new_trip_id,
+        "date": new_date,
+        "seatType": new_seat_type
+    }
+    print(payload)
+    r = requests.post(url=url, json=payload, headers=headers)
+    if r.status_code == 200:
+        print(r.text)
+    else:
+        print(f"Request Failed: status code: {r.status_code}")
+        print(r.text)
+
+
+def _query_admin_travel(headers):
+    url = f"{base_address}/api/v1/admintravelservice/admintravel"
+
+    r = requests.get(url=url, headers=headers)
+    if r.status_code == 200 and r.json()["status"] == 1:
+        print("success to query admin travel")
+    else:
+        print(f"faild to query admin travel with status_code: {r.status_code}")
+
+
+if __name__ == '__main__':
+    _, token = _login(username="admin", password="222222")
     print(token)
