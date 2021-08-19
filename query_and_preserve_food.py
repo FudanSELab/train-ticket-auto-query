@@ -114,15 +114,13 @@ def preserve(PRESERVE_URL, base_preserve_payload, headers):
 
 if __name__ == '__main__':
     cookie = "JSESSIONID=823B2652E3F5B64A1C94C924A05D80AF; YsbCaptcha=2E037F4AB09D49FA9EE3BE4E737EAFD2"
-    Authorization = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyODY5ODgzMiwiZXhwIjoxNjI4NzAyNDMyfQ.dfjI2QxU7JdBinl5RcDcccIcp-6Y0TO_TWLrdmET_48"
-
+    Authorization = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZHNlX21pY3Jvc2VydmljZSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpZCI6IjRkMmE0NmM3LTcxY2ItNGNmMS1iNWJiLWI2ODQwNmQ5ZGE2ZiIsImlhdCI6MTYyODcxMDk3MywiZXhwIjoxNjI4NzE0NTczfQ.B_aaWjfxG9xV4-s4Z3XOr8gVW7AuQRPq7uhsVGStp4A"
     headers = {
         'Connection': 'close',
         "Cookie": f"{cookie}",
         "Authorization": f"Bearer {Authorization}",
         "Content-Type": "application/json"
     }
-
 
     start_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 

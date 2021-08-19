@@ -126,6 +126,41 @@ def _query_normal_ticket(place_pair: tuple = ("Nan Jing", "Shang Hai"), headers:
         trip_ids.append(trip_id)
     return trip_ids
 
+def _query_high_speed_ticket_parallel(place_pair: tuple = ("Shang Hai", "Su Zhou"), headers: dict = {},
+                             time: str = "2021-07-15") -> List[str]:
+    """
+    返回TripId 列表
+    :param place_pair: 使用的开始结束组对
+    :param headers: 请求头
+    :return: TripId 列表
+    """
+
+    url = f"{base_address}/api/v1/travelservice/trips/left_parallel"
+    place_pairs = [("Shang Hai", "Su Zhou"),
+                   ("Su Zhou", "Shang Hai"),
+                   ("Nan Jing", "Shang Hai")]
+
+    payload = {
+        "departureTime": time,
+        "startingPlace": place_pair[0],
+        "endPlace": place_pair[1],
+    }
+
+    response = requests.post(url=url,
+                             headers=headers,
+                             json=payload)
+
+    if response.status_code is not 200 or response.json().get("data") is None:
+        logger.warning(f"request for {url} failed. response data is {response.text}")
+        return None
+
+    data = response.json().get("data")  # type: dict
+
+    trip_ids = []
+    for d in data:
+        trip_id = d.get("tripId").get("type") + d.get("tripId").get("number")
+        trip_ids.append(trip_id)
+    return trip_ids
 
 def _query_assurances(headers: dict = {}):
     url = f"{base_address}/api/v1/assuranceservice/assurances/types"
