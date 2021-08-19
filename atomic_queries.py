@@ -54,6 +54,10 @@ def _login(username="fdse_microservice", password="111111"):
     return None, None
 
 
+def admin_login():
+    return _login
+
+
 def _query_high_speed_ticket(place_pair: tuple = ("Shang Hai", "Su Zhou"), headers: dict = {},
                              time: str = "2021-07-15") -> List[str]:
     """
@@ -91,8 +95,8 @@ def _query_high_speed_ticket(place_pair: tuple = ("Shang Hai", "Su Zhou"), heade
     return trip_ids
 
 
-def _query_normal_ticket(place_pair: tuple = ("Nan Jing", "Shang Hai"), headers: dict = {}, time: str = "2021-07-15") -> \
-        List[str]:
+def _query_normal_ticket(place_pair: tuple = ("Nan Jing", "Shang Hai"), headers: dict = {},
+                         time: str = "2021-07-15") -> List[str]:
     url = f"{base_address}/api/v1/travel2service/trips/left"
     place_pairs = [("Shang Hai", "Nan Jing"),
                    ("Nan Jing", "Shang Hai")]
@@ -240,7 +244,7 @@ def _query_contacts(headers: dict = {}) -> List[str]:
     return ids
 
 
-def _query_orders(headers: dict = {}, types: tuple = tuple([0]), query_other: bool = False) -> List[dict]:
+def _query_orders(headers: dict = {}, types: tuple = tuple([0]), query_other: bool = False) -> List[tuple]:
     """
     返回(orderId, tripId) triple list for inside_pay_service
     :param headers:
