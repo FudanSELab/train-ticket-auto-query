@@ -86,7 +86,7 @@ class Query:
 
         response = self.session.post(url=url, headers=headers, json=payload)
 
-        if response.status_code is not 200 or response.json().get("data") is None:
+        if response.status_code != 200 or response.json().get("data") is None:
             logger.warning(
                 f"request for {url} failed. response data is {response.text}")
             return None
@@ -119,7 +119,7 @@ class Query:
 
         response = self.session.post(url=url, headers=headers, json=payload)
 
-        if response.status_code is not 200 or response.json().get("data") is None:
+        if response.status_code != 200 or response.json().get("data") is None:
             logger.warning(
                 f"request for {url} failed. response data is {response.json()}")
             return None
@@ -160,7 +160,7 @@ class Query:
 
         response = self.session.post(url=url, headers=headers, json=payload)
 
-        if response.status_code is not 200 or response.json().get("data") is None:
+        if response.status_code != 200 or response.json().get("data") is None:
             logger.warning(
                 f"request for {url} failed. response data is {response.text}")
             return None
@@ -199,7 +199,7 @@ class Query:
 
         response = self.session.post(url=url, headers=headers, json=payload)
 
-        if response.status_code is not 200 or response.json().get("data") is None:
+        if response.status_code != 200 or response.json().get("data") is None:
             logger.warning(
                 f"request for {url} failed. response data is {response.json()}")
             return None
@@ -216,7 +216,7 @@ class Query:
         url = f"{self.address}/api/v1/assuranceservice/assurances/types"
 
         response = self.session.get(url=url, headers=headers)
-        if response.status_code is not 200 or response.json().get("data") is None:
+        if response.status_code != 200 or response.json().get("data") is None:
             logger.warning(
                 f"query assurance failed, response data is {response.json()}")
             return None
@@ -229,7 +229,7 @@ class Query:
         url = f"{self.address}/api/v1/foodservice/foods/2021-07-14/{place_pair[0]}/{place_pair[1]}/{train_num}"
 
         response = self.session.get(url=url, headers=headers)
-        if response.status_code is not 200 or response.json().get("data") is None:
+        if response.status_code != 200 or response.json().get("data") is None:
             logger.warning(f"query food failed, response data is {response}")
             return None
         data = response.json().get("data")
@@ -252,7 +252,7 @@ class Query:
         url = f"{self.address}/api/v1/contactservice/contacts/account/{self.uid}"
 
         response = self.session.get(url=url, headers=headers)
-        if response.status_code is not 200 or response.json().get("data") is None:
+        if response.status_code != 200 or response.json().get("data") is None:
             logger.warning(
                 f"query contacts failed, response data is {response.json()}")
             return None
@@ -261,7 +261,7 @@ class Query:
         # print("contacts")
         # pprint(data)
 
-        ids = [d.get("id") for d in data if d.get("id") is not None]
+        ids = [d.get("id") for d in data if d.get("id") != None]
         # pprint(ids)
         return ids
 
@@ -283,7 +283,7 @@ class Query:
         }
 
         response = self.session.post(url=url, headers=headers, json=payload)
-        if response.status_code is not 200 or response.json().get("data") is None:
+        if response.status_code != 200 or response.json().get("data") is None:
             logger.warning(
                 f"query orders failed, response data is {response.text}")
             return None
@@ -320,7 +320,7 @@ class Query:
         }
 
         response = self.session.post(url=url, headers=headers, json=payload)
-        if response.status_code is not 200 or response.json().get("data") is None:
+        if response.status_code != 200 or response.json().get("data") is None:
             logger.warning(
                 f"query orders failed, response data is {response.text}")
             return None
@@ -433,10 +433,10 @@ class Query:
     def query_cheapest(self, date="", headers: dict = {}):
         self.query_advanced_ticket(type="cheapest", date=date)
 
-    def query_min_station(self, date="2021-12-31", headers: dict = {}):
+    def query_min_station(self, date="", headers: dict = {}):
         self.query_advanced_ticket(type="minStation", date=date)
 
-    def query_quickest(self, date="2021-12-31", headers: dict = {}):
+    def query_quickest(self, date="", headers: dict = {}):
         self.query_advanced_ticket(type="quickest", date=date)
 
     def query_admin_basic_price(self, headers: dict = {}):
