@@ -3,7 +3,7 @@ import requests
 import logging
 import time
 import random
-import utils
+from .utils import *
 
 logger = logging.getLogger("auto-queries")
 datestr = time.strftime("%Y-%m-%d", time.localtime())
@@ -21,12 +21,12 @@ class Query:
         self.session = requests.Session()
         self.session.headers.update({
             'Proxy-Connection': 'keep-alive',
-            'Accept': 'application/json, text/javascript, */*; q=0.01',
+            'Accept': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36',
             'Content-Type': 'application/json',
             'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-            'Connection': 'close'
+            'Connection': 'keep-alive',
         })
 
     def login(self, username="fdse_microservice", password="111111") -> bool:
@@ -43,6 +43,9 @@ class Query:
         data = '{"username":"' + username + '","password":"' + \
             password + '","verificationCode":"1234"}'
 
+        # 获取cookies
+        verify_url = self.address + '/api/v1/verifycode/generate'
+        r = self.session.get(url=verify_url)
         r = self.session.post(url=url, headers=headers,
                               data=data, verify=False)
 
@@ -50,6 +53,9 @@ class Query:
             data = r.json().get("data")
             self.uid = data.get("userId")
             self.token = data.get("token")
+            self.session.headers.update(
+                {"Authorization": f"Bearer {self.token}"}
+            )
             logger.info(f"login successe, uid: {self.uid}")
         else:
             logger.error("login failed")
@@ -508,36 +514,36 @@ class Query:
             "tripId": ""
         }
 
-        trip_id = utils.random_from_list(trip_ids)
+        trip_id = random_from_list(trip_ids)
         base_preserve_payload["tripId"] = trip_id
 
-        need_food = utils.random_boolean()
+        need_food = random_boolean()
         if need_food:
             logger.info("need food")
             food_result = self.query_food()
-            food_dict = utils.random_from_list(food_result)
+            food_dict = random_from_list(food_result)
             base_preserve_payload.update(food_dict)
         else:
             logger.info("not need food")
             base_preserve_payload["foodType"] = "0"
 
-        need_assurance = utils.random_boolean()
+        need_assurance = random_boolean()
         if need_assurance:
             base_preserve_payload["assurance"] = 1
 
         contacts_result = self.query_contacts()
-        contacts_id = utils.random_from_list(contacts_result)
+        contacts_id = random_from_list(contacts_result)
         base_preserve_payload["contactsId"] = contacts_id
 
         # 高铁 2-3
-        seat_type = utils.random_from_list(["2", "3"])
+        seat_type = random_from_list(["2", "3"])
         base_preserve_payload["seatType"] = seat_type
 
-        need_consign = utils.random_boolean()
+        need_consign = random_boolean()
         if need_consign:
             consign = {
-                "consigneeName": utils.random_str(),
-                "consigneePhone": utils.random_phone(),
+                "consigneeName": random_str(),
+                "consigneePhone": random_phone(),
                 "consigneeWeight": random.randint(1, 10),
                 "handleDate": date
             }
@@ -546,9 +552,9 @@ class Query:
         logger.info(
             f"choices: preserve_high: {is_high_speed} need_food:{need_food}  need_consign: {need_consign}  need_assurance:{need_assurance}")
 
-        res = requests.post(url=PRESERVE_URL,
-                            headers=headers,
-                            json=base_preserve_payload)
+        res = self.session.post(url=PRESERVE_URL,
+                                headers=headers,
+                                json=base_preserve_payload)
 
         if res.json()["data"] != "Success":
             logger.error("preserve not success: " + res.json())
