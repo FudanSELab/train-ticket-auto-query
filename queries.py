@@ -3,6 +3,7 @@ import requests
 import logging
 import time
 import random
+import utils
 
 logger = logging.getLogger("auto-queries")
 datestr = time.strftime("%Y-%m-%d", time.localtime())
@@ -220,7 +221,7 @@ class Query:
             logger.warning(
                 f"query assurance failed, response data is {response.json()}")
             return None
-        data = response.json().get("data")
+        _ = response.json().get("data")
         # assurance只有一种
 
         return [{"assurance": "1"}]
@@ -232,7 +233,7 @@ class Query:
         if response.status_code != 200 or response.json().get("data") is None:
             logger.warning(f"query food failed, response data is {response}")
             return None
-        data = response.json().get("data")
+        _ = response.json().get("data")
 
         # food 是什么不会对后续调用链有影响，因此查询后返回一个固定数值
         return [{
@@ -265,7 +266,7 @@ class Query:
         # pprint(ids)
         return ids
 
-    def query_orders(self, types: tuple = tuple([0]), query_other: bool = False, headers: dict = {}) -> List[tuple]:
+    def query_orders(self, types: tuple = tuple([0, 1]), query_other: bool = False, headers: dict = {}) -> List[tuple]:
         """
         返回(orderId, tripId) triple list for inside_pay_service
         :param headers:
@@ -487,3 +488,67 @@ class Query:
         else:
             logger.warning(
                 f"faild to query admin travel with status_code: {r.status_code}")
+
+    def preserve(self, start: str, end: str, trip_ids: List = [], is_high_speed: bool = True, date: str = "", headers: dict = {}):
+        if date == "":
+            date = datestr
+
+        if is_high_speed:
+            PRESERVE_URL = f"{self.address}/api/v1/preserveservice/preserve"
+        else:
+            PRESERVE_URL = f"{self.address}/api/v1/preserveotherservice/preserveOther"
+
+        base_preserve_payload = {
+            "accountId": self.uid,
+            "assurance": "0",
+            "contactsId": "",
+            "date": date,
+            "from": start,
+            "to": end,
+            "tripId": ""
+        }
+
+        trip_id = utils.random_from_list(trip_ids)
+        base_preserve_payload["tripId"] = trip_id
+
+        need_food = utils.random_boolean()
+        if need_food:
+            logger.info("need food")
+            food_result = self.query_food()
+            food_dict = utils.random_from_list(food_result)
+            base_preserve_payload.update(food_dict)
+        else:
+            logger.info("not need food")
+            base_preserve_payload["foodType"] = "0"
+
+        need_assurance = utils.random_boolean()
+        if need_assurance:
+            base_preserve_payload["assurance"] = 1
+
+        contacts_result = self.query_contacts()
+        contacts_id = utils.random_from_list(contacts_result)
+        base_preserve_payload["contactsId"] = contacts_id
+
+        # 高铁 2-3
+        seat_type = utils.random_from_list(["2", "3"])
+        base_preserve_payload["seatType"] = seat_type
+
+        need_consign = utils.random_boolean()
+        if need_consign:
+            consign = {
+                "consigneeName": utils.random_str(),
+                "consigneePhone": utils.random_phone(),
+                "consigneeWeight": random.randint(1, 10),
+                "handleDate": date
+            }
+            base_preserve_payload.update(consign)
+
+        logger.info(
+            f"choices: preserve_high: {is_high_speed} need_food:{need_food}  need_consign: {need_consign}  need_assurance:{need_assurance}")
+
+        res = requests.post(url=PRESERVE_URL,
+                            headers=headers,
+                            json=base_preserve_payload)
+
+        if res.json()["data"] != "Success":
+            logger.error("preserve not success: " + res.json())
