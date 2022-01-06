@@ -57,11 +57,10 @@ class Query:
                 {"Authorization": f"Bearer {self.token}"}
             )
             logger.info(f"login successe, uid: {self.uid}")
+            return True
         else:
             logger.error("login failed")
             return False
-
-        return True
 
     def admin_login(self):
         return self.login
@@ -128,7 +127,7 @@ class Query:
 
         if response.status_code != 200 or response.json().get("data") is None:
             logger.warning(
-                f"request for {url} failed. response data is {response.json()}")
+                f"request for {url} failed. response data is {response.text}")
             return None
 
         data = response.json().get("data")  # type: dict
@@ -208,7 +207,7 @@ class Query:
 
         if response.status_code != 200 or response.json().get("data") is None:
             logger.warning(
-                f"request for {url} failed. response data is {response.json()}")
+                f"request for {url} failed. response data is {response.text}")
             return None
 
         data = response.json().get("data")
@@ -225,7 +224,7 @@ class Query:
         response = self.session.get(url=url, headers=headers)
         if response.status_code != 200 or response.json().get("data") is None:
             logger.warning(
-                f"query assurance failed, response data is {response.json()}")
+                f"query assurance failed, response data is {response.text}")
             return None
         _ = response.json().get("data")
         # assurance只有一种
@@ -237,7 +236,8 @@ class Query:
 
         response = self.session.get(url=url, headers=headers)
         if response.status_code != 200 or response.json().get("data") is None:
-            logger.warning(f"query food failed, response data is {response}")
+            logger.warning(
+                f"query food failed, response data is {response.text}")
             return None
         _ = response.json().get("data")
 
@@ -261,7 +261,7 @@ class Query:
         response = self.session.get(url=url, headers=headers)
         if response.status_code != 200 or response.json().get("data") is None:
             logger.warning(
-                f"query contacts failed, response data is {response.json()}")
+                f"query contacts failed, response data is {response.text}")
             return None
 
         data = response.json().get("data")
@@ -381,9 +381,9 @@ class Query:
         res = self.session.get(url=url, headers=headers)
 
         if res.status_code == 200:
-            logger.info(f"query {routeId} success")
+            logger.info(f"query routeId: {routeId} success")
         else:
-            logger.warning(f"query {routeId} fail")
+            logger.warning(f"query routeId: {routeId} fail")
 
         return
 
@@ -557,4 +557,4 @@ class Query:
                                 json=base_preserve_payload)
 
         if res.json()["data"] != "Success":
-            logger.error("preserve not success: " + res.json())
+            logger.error("preserve not success: " + res.text)
