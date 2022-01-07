@@ -310,7 +310,10 @@ class Query:
 
         return pairs
 
-    def query_orders_all_info(self, query_other: bool = False, headers: dict = {}) -> List[tuple]:
+    def query_other_orders(self, types: tuple = tuple([0, 1]), headers: dict = {}) -> List[tuple]:
+        return self.query_orders(types, True, headers)
+
+    def query_orders_all_info(self, query_other: bool = False, headers: dict = {}) -> List[dict]:
         """
         返回(orderId, tripId) triple list for consign service
         :param headers:
@@ -333,7 +336,7 @@ class Query:
             return None
 
         data = response.json().get("data")
-        pairs = []
+        list = []
         for d in data:
             result = {}
             result["accountId"] = d.get("accountId")
@@ -342,11 +345,11 @@ class Query:
             result["orderId"] = d.get("id")
             result["from"] = d.get("from")
             result["to"] = d.get("to")
-            pairs.append(result)
+            list.append(result)
 
-        logger.info(f"queried {len(pairs)} orders")
+        logger.info(f"queried {len(list)} orders")
 
-        return pairs
+        return list
 
     def put_consign(self, result, headers: dict = {}) -> str:
         url = f"{self.address}/api/v1/consignservice/consigns"
@@ -363,14 +366,15 @@ class Query:
             "id": "",
             "isWithin": False
         }
-        response = self.session.put(url=url, headers=headers,
-                                    json=consignload)
+        res = self.session.put(url=url, headers=headers,
+                               json=consignload)
 
         order_id = result["orderId"]
-        if response.status_code == 200 | response.status_code == 201:
-            logger.info(f"{order_id} put consign success")
+        if res.status_code == 200 or res.status_code == 201:
+            logger.info(f"order {order_id} put consign success")
         else:
-            logger.warning(f"{order_id} failed!")
+            logger.warning(
+                f"order {order_id} failed, code: {res.status_code}, text: {res.text}")
             return None
 
         return order_id
@@ -383,7 +387,8 @@ class Query:
         if res.status_code == 200:
             logger.info(f"query routeId: {routeId} success")
         else:
-            logger.warning(f"query routeId: {routeId} fail")
+            logger.warning(
+                f"query routeId: {routeId} fail, code: {res.status_code}, text: {res.text}")
 
         return
 
@@ -394,12 +399,13 @@ class Query:
             "tripId": trip_id
         }
 
-        response = self.session.post(url=url, headers=headers, json=payload)
+        res = self.session.post(url=url, headers=headers, json=payload)
 
-        if response.status_code == 200:
-            logger.info(f"{order_id} pay success")
+        if res.status_code == 200:
+            logger.info(f"order {order_id} pay success")
         else:
-            logger.warning(f"pay {order_id} failed!")
+            logger.warning(
+                f"pay order {order_id} failed, code: {res.status_code}, text: {res.text}")
             return None
 
         return order_id
@@ -407,33 +413,36 @@ class Query:
     def cancel_order(self, order_id, headers: dict = {}):
         url = f"{self.address}/api/v1/cancelservice/cancel/{order_id}/{self.uid}"
 
-        response = self.session.get(url=url, headers=headers)
+        res = self.session.get(url=url, headers=headers)
 
-        if response.status_code == 200:
-            logger.info(f"{order_id} cancel success")
+        if res.status_code == 200:
+            logger.info(f"order {order_id} cancel success")
         else:
-            logger.warning(f"{order_id} cancel failed")
+            logger.warning(
+                f"order {order_id} cancel failed, code: {res.status_code}, text: {res.text}")
 
         return order_id
 
     def collect_order(self, order_id, headers: dict = {}):
         url = f"{self.address}/api/v1/executeservice/execute/collected/{order_id}"
-        response = self.session.get(url=url, headers=headers)
-        if response.status_code == 200:
-            logger.info(f"{order_id} collect success")
+        res = self.session.get(url=url, headers=headers)
+        if res.status_code == 200:
+            logger.info(f"order {order_id} collect success")
         else:
-            logger.warning(f"{order_id} collect failed")
+            logger.warning(
+                f"order {order_id} collect failed, code: {res.status_code}, text: {res.text}")
 
         return order_id
 
     def enter_station(self, order_id, headers: dict = {}):
         url = f"{self.address}/api/v1/executeservice/execute/execute/{order_id}"
-        response = self.session.get(url=url,
-                                    headers=headers)
-        if response.status_code == 200:
-            logger.info(f"{order_id} enter station success")
+        res = self.session.get(url=url,
+                               headers=headers)
+        if res.status_code == 200:
+            logger.info(f"order {order_id} enter station success")
         else:
-            logger.warning(f"{order_id} enter station failed")
+            logger.warning(
+                f"order {order_id} enter station failed, code: {res.status_code}, text: {res.text}")
 
         return order_id
 

@@ -16,7 +16,7 @@ def query_and_cancel(q: Query):
         return
 
     # (orderId, tripId)
-    pair = random_form_list(pairs)
+    pair = random_from_list(pairs)
 
     order_id = q.cancel_order(order_id=pair[0])
     if not order_id:
@@ -35,7 +35,7 @@ def query_and_collect(q: Query):
         return
 
     # (orderId, tripId)
-    pair = random_form_list(pairs)
+    pair = random_from_list(pairs)
 
     order_id = q.collect_order(order_id=pair[0])
     if not order_id:
@@ -54,7 +54,7 @@ def query_and_execute(q: Query):
         return
 
     # (orderId, tripId)
-    pair = random_form_list(pairs)
+    pair = random_from_list(pairs)
 
     order_id = q.enter_station(order_id=pair[0])
     if not order_id:
@@ -87,16 +87,16 @@ def query_and_preserve(q: Query):
 
 def query_and_consign(q: Query):
     if random_from_weighted(highspeed_weights):
-        pairs = q.query_orders_all_info()
+        list = q.query_orders_all_info()
     else:
-        pairs = q.query_orders(query_other=True)
+        list = q.query_orders_all_info(query_other=True)
 
-    if not pairs:
+    if not list:
         return
 
     # (orderId, tripId)
-    pair = random_form_list(pairs)
-    order_id = q.put_consign(pair)
+    res = random_from_list(list)
+    order_id = q.put_consign(res)
 
     if not order_id:
         return
@@ -114,7 +114,7 @@ def query_and_pay(q: Query):
         return
 
     # (orderId, tripId)
-    pair = random_form_list(pairs)
+    pair = random_from_list(pairs)
     order_id = q.pay_order(pair[0], pair[1])
 
     if not order_id:
