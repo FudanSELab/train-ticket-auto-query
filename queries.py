@@ -56,7 +56,7 @@ class Query:
             self.session.headers.update(
                 {"Authorization": f"Bearer {self.token}"}
             )
-            logger.info(f"login successe, uid: {self.uid}")
+            logger.info(f"login success, uid: {self.uid}")
             return True
         else:
             logger.error("login failed")
@@ -494,6 +494,8 @@ class Query:
             logger.warning(
                 f"Request Failed: status code: {r.status_code}, {r.text}")
 
+        return
+
     def query_admin_travel(self, headers: dict = {}):
         url = f"{self.address}/api/v1/admintravelservice/admintravel"
 
@@ -503,6 +505,7 @@ class Query:
         else:
             logger.warning(
                 f"faild to query admin travel with status_code: {r.status_code}")
+        return
 
     def preserve(self, start: str, end: str, trip_ids: List = [], is_high_speed: bool = True, date: str = "", headers: dict = {}):
         if date == "":
@@ -565,5 +568,9 @@ class Query:
                                 headers=headers,
                                 json=base_preserve_payload)
 
-        if res.json()["data"] != "Success":
-            logger.error("preserve not success: " + res.text)
+        if res.status_code == 200 and res.json()["data"] == "Success":
+            logger.info(f"preserve trip {trip_id} success")
+        else:
+            logger.error(
+                f"preserve failed, code: {res.status_code}, {res.text}")
+        return
