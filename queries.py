@@ -59,7 +59,7 @@ class Query:
             logger.info(f"login success, uid: {self.uid}")
             return True
         else:
-            logger.error("login failed")
+            logger.error(f"login failed, code: {r.status_code}, {r.text}")
             return False
 
     def admin_login(self):
