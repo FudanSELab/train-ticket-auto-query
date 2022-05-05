@@ -121,3 +121,23 @@ def query_and_pay(q: Query):
         return
 
     logger.info(f"{order_id} queried and paid")
+
+
+def query_and_rebook(q: Query):
+    if random_from_weighted(highspeed_weights):
+        pairs = q.query_orders(types=tuple([0, 1]))
+    else:
+        pairs = q.query_orders(types=tuple([0, 1]), query_other=True)
+
+    if not pairs:
+        return
+
+    # (orderId, tripId)
+    pair = random_from_list(pairs)
+
+    order_id = q.cancel_order(order_id=pair[0])
+    if not order_id:
+        return
+
+    q.rebook_ticket(pair[0], pair[1], pair[1])
+    logger.info(f"{order_id} queried and rebooked")
