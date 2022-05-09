@@ -379,13 +379,16 @@ class Query:
 
         return order_id
 
-    def query_route(self, routeId: str = '92708982-77af-4318-be25-57ccb0ff69ad', headers: dict = {}):
-        url = f"{self.address}/api/v1/routeservice/routes/{routeId}"
+    def query_route(self, routeId: str = '', headers: dict = {}):
+        if routeId == '':
+            url = f"{self.address}/api/v1/routeservice/routes"
+        else:
+            url = f"{self.address}/api/v1/routeservice/routes/{routeId}"
 
         res = self.session.get(url=url, headers=headers)
 
         if res.status_code == 200:
-            logger.info(f"query routeId: {routeId} success")
+            logger.info(f"query routeId success")
         else:
             logger.warning(
                 f"query routeId: {routeId} fail, code: {res.status_code}, text: {res.text}")
@@ -476,15 +479,15 @@ class Query:
             logger.warning(f"config failed")
             return None
 
-    def rebook_ticket(self, old_order_id, old_trip_id, new_trip_id, new_date = "", new_seat_type = "", headers: dict = {}):
+    def rebook_ticket(self, old_order_id, old_trip_id, new_trip_id, new_date="", new_seat_type="", headers: dict = {}):
         url = f"{self.address}/api/v1/rebookservice/rebook"
 
         if new_date == "":
             new_date = datestr
 
         if new_seat_type == "":
-            new_seat_type = random_from_list(["2", "3"]) 
-        
+            new_seat_type = random_from_list(["2", "3"])
+
         payload = {
             "oldTripId": old_trip_id,
             "orderId": old_order_id,
