@@ -11,7 +11,7 @@ def random_from_list(l: List):
     return random.choice(l)
 
 
-def random_from_weighted(d: dict):
+def random_from_weighted(d: dict): # highspeed_weights = {True: 60, False: 40}
     """
     :param d: 带相对权重的字典，eg. {'a': 100, 'b': 50}
     :return: 返回随机选择的key
@@ -37,3 +37,9 @@ def random_str():
 
 def random_phone():
     ''.join(random.choices(string.digits, k=random.randint(8, 15)))
+
+def str_to_float(fp_str):
+    try:
+        return float(fp_str)
+    except:
+        None
